@@ -6,7 +6,7 @@ import configparser
 import os
 
 config_obj = configparser.ConfigParser()
-config_obj.read("/remote_homes/djovanovic/djovanovic_lab/configfile.ini")
+config_obj.read("/remote_homes/djovanovic/djovanovic_lab/pythonscripts/configfile.ini")
 
 GitLabParameters = config_obj["GitLab"]
 JenkinsParameters = config_obj["Jenkins"]
