@@ -74,8 +74,8 @@ def webhook():
         if data['event_type'] == 'merge_request':
             print('merge request is going on')
             tempdata = data['project']
-            print(type(tempdata))
-            print(type(data))
+            #print(type(tempdata))
+            #print(type(data))
             # source_proj = tempsrc["name"]
             # source_id = tempsrc["id"]
             # summary_tmp = source_id + source_proj
@@ -86,8 +86,8 @@ def webhook():
             oa = data['object_attributes']
             #sb = pa['source_branch']
             #tb = pa['target_branch']
-            print(oa["source_branch"])
-            print(oa["target_branch"])
+            #print(oa["source_branch"])
+            #print(oa["target_branch"])
             new_issue = jira.create_issue(project=issue_key,
                                           summary=f'On project {tempdata["name"]}, merging {oa["source_branch"]} into {oa["target_branch"]} branch',
                                           description='test', issuetype={'name': 'Bug'})

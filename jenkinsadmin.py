@@ -32,11 +32,13 @@ if (option=='2'):
 	client.system.cancel_quiet_down()
 #case '3':
 if (option=='3'):
+	os.system(f'rm {jenkins_backup_dir}jenkins_backup.tar.gz')
 	os.system(f'docker cp {jenkins_container_name}:{jenkins_workdir} {jenkins_backup_dir}{jenkins_backup_folder}')
 	#os.system('docker cp jenkins_compose_jenkins-master_1:/var/jenkins_home ~/djovanovic_lab/jenkins_backup')
-	os.system(f'tar -czvf {jenkins_backup_dir}/jenkins_backup.tar.gz {jenkins_backup_dir}')
+	os.system(f'tar -czvf {jenkins_backup_dir}jenkins_backup.tar.gz {jenkins_backup_dir}{jenkins_backup_folder}')
 	#os.system('tar -czvf jenkins_backup.tar.gz ~/djovanovic_lab/jenkins_backup')
-	os.system(f'rm -rf {jenkins_backup_dir}/{jenkins_backup_folder}')
+	#os.system(f'mv jenkins_backup.tar.gz ..')
+	os.system(f'rm -rf {jenkins_backup_dir}{jenkins_backup_folder}')
 #case '4':
 if (option=='4'):
 	job = client.get_job(jenkins_job_name)
