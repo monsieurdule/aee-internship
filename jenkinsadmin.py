@@ -11,7 +11,7 @@ parser.add_argument('command', metavar='command', type=str, help='Type <stop> to
 
 args = parser.parse_args() 
 
-option = ['stop', 'start', 'backup', 'run']
+option = ['stop', 'start', 'backup', 'run', 'test']
 
 #if len(sys.argv) == 1:
 #	print('To call the script you need at least one parameter!\n\nType <stop> top stop the instance\nType <start> to start the instance\nType <backup> to backup the instance\nType <run> to start the job')
@@ -59,6 +59,8 @@ if args == option[3]:
 		#job = client.get_job(jenkins_job_name)
 		last_build = job.get_last_build() #get the last build
 		last_build.stop() #stop it
+if args == option[4]:
+	print('Test successful')
 if args not in option:
 	print('Wrong parameter!')
 #elif len(sys.argv) > 2:
