@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Test') { 
             steps {
-                sh "python3 jenkinsadmin.py test"
+                sh 'python3 jenkinsadmin.py test'
             }
         }
     }
