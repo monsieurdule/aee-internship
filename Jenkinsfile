@@ -1,9 +1,9 @@
 pipeline {
-    agent vm 
+    agent 'vm' 
     stages {
         stage('Test') { 
             steps {
-                python3 jenkinsadmin.py test
+                sh "python3 jenkinsadmin.py test"
             }
         }
         stage('Build') { 
