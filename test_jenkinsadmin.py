@@ -1,5 +1,8 @@
 import unittest
 
 class TestJenkinsadmin(unittest.TestCase):
-    def test_stop(self):
+    #api start job
+    #api proverim jel job u izvrsavanju
+    #assert da li je true
+    def test_start(self):
         
