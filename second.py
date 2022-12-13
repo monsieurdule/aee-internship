@@ -5,6 +5,13 @@ from jira import JIRA
 import configparser
 import os
 
+parser = argparse.ArgumentParser(description='Use Jenkinsadmin script with arguments')
+
+parser.add_argument('stop', metavar='team', type=str, help='stop the instance')
+
+args = parse.parse_args() 
+
+
 config_obj = configparser.ConfigParser()
 config_obj.read("/remote_homes/djovanovic/djovanovic_lab/pythonscripts/configfile.ini")
 
