@@ -17,7 +17,7 @@ option = ['stop', 'start', 'backup', 'run', 'test']
 #	print('To call the script you need at least one parameter!\n\nType <stop> top stop the instance\nType <start> to start the instance\nType <backup> to backup the instance\nType <run> to start the job')
 #elif len(sys.argv) == 2:
 config_obj = configparser.ConfigParser()
-config_obj.read("/remote_homes/djovanovic/djovanovic_lab/pythonscripts/configfile.ini")
+config_obj.read("configfile.ini")
 
 JenkinsParameters = config_obj["Jenkins"]
 
@@ -36,19 +36,19 @@ client = Jenkins(jenkins_url, auth=(jenkins_username, jenkins_password))
 
 #option = input('Opcije:\n1 za stop sistema\n2 za start\n3 za backup\n4 start job\n')
 
-if args == option[0]:
+if args.command == option[0]:
 	client.system.quiet_down() #sleep jenkins
 
-if args == option[1]:
+if args.command == option[1]:
 	client.system.cancel_quiet_down() #wake jenkins
 
-if args == option[2]:
+if args.command == option[2]:
 	subprocess.run(['rm', f"{jenkins_backup_dir}jenkins_backup.tar.gz"]) #remove previous archive file
 	subprocess.run(['docker', 'cp', f'{jenkins_container_name}:{jenkins_workdir}', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #copy jenkins workdir to backup folder
 	subprocess.run(['tar', '-czvf', f'{jenkins_backup_dir}/jenkins_backup.tar.gz', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #tar the backup folder
 	subprocess.run(['rm', '-rf', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #remove folder, leave only .tar
 
-if args == option[3]:
+if args.command == option[3]:
 	job = client.get_job(jenkins_job_name) #job name is predefined in config file
 	#print(job)
 	item = client.build_job(jenkins_job_name) #build job and save it as "item"
@@ -59,9 +59,9 @@ if args == option[3]:
 		#job = client.get_job(jenkins_job_name)
 		last_build = job.get_last_build() #get the last build
 		last_build.stop() #stop it
-if args == option[4]:
+if args.command == option[4]:
 	print('Test successful')
-if args not in option:
+if args.command not in option:
 	print('Wrong parameter!')
 #elif len(sys.argv) > 2:
 #print('Too many arguments!')
