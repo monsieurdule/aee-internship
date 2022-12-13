@@ -1,7 +1,7 @@
-#from sys import exit
 from api4jenkins import Jenkins
 import configparser
-import os
+import subprocess
+
 config_obj = configparser.ConfigParser()
 config_obj.read("/remote_homes/djovanovic/djovanovic_lab/pythonscripts/configfile.ini")
 
@@ -19,36 +19,29 @@ jenkins_backup_folder = JenkinsParameters["backup_folder"]
 client = Jenkins(jenkins_url, auth=(jenkins_username, jenkins_password))
 
 print(client.version)
-#if (item.exists()):
-	#print('item exists')
+
 option = input('Opcije:\n1 za stop sistema\n2 za start\n3 za backup\n4 start job\n')
 
-#match option:
-	#case "1":
 if (option=='1'):
-	client.system.quiet_down()
-#case '2':
+	client.system.quiet_down() #sleep jenkins
+
 if (option=='2'):
-	client.system.cancel_quiet_down()
-#case '3':
+	client.system.cancel_quiet_down() #wake jenkins
+
 if (option=='3'):
-	os.system(f'rm {jenkins_backup_dir}jenkins_backup.tar.gz')
-	os.system(f'docker cp {jenkins_container_name}:{jenkins_workdir} {jenkins_backup_dir}{jenkins_backup_folder}')
-	#os.system('docker cp jenkins_compose_jenkins-master_1:/var/jenkins_home ~/djovanovic_lab/jenkins_backup')
-	os.system(f'tar -czvf {jenkins_backup_dir}jenkins_backup.tar.gz {jenkins_backup_dir}{jenkins_backup_folder}')
-	#os.system('tar -czvf jenkins_backup.tar.gz ~/djovanovic_lab/jenkins_backup')
-	#os.system(f'mv jenkins_backup.tar.gz ..')
-	os.system(f'rm -rf {jenkins_backup_dir}{jenkins_backup_folder}')
-#case '4':
+	subprocess.run(['rm', f"{jenkins_backup_dir}jenkins_backup.tar.gz"]) #remove previous archive file
+	subprocess.run(['docker', 'cp', f'{jenkins_container_name}:{jenkins_workdir}', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #copy jenkins workdir to backup folder
+	subprocess.run(['tar', '-czvf', f'{jenkins_backup_dir}/jenkins_backup.tar.gz', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #tar the backup folder
+	subprocess.run(['rm', '-rf', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #remove folder, leave only .tar
+
 if (option=='4'):
-	job = client.get_job(jenkins_job_name)
-	print(job)
-	item = client.build_job(jenkins_job_name)
-	build = item.get_build()
+	job = client.get_job(jenkins_job_name) #job name is predefined in config file
+	#print(job)
+	item = client.build_job(jenkins_job_name) #build job and save it as "item"
+	build = item.get_build() #save the build as variable so we can use later
 	print(build)
 	s = input('Press any key to stop it\n')
-	if (s):
-		job = client.get_job(jenkins_job_name)
-		last_build = job.get_last_build()
-		last_build.stop()
-#exit()
+	if (s): #if any key is entered job will stop
+		#job = client.get_job(jenkins_job_name)
+		last_build = job.get_last_build() #get the last build
+		last_build.stop() #stop it

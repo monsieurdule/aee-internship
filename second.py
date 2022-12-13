@@ -28,15 +28,12 @@ jenkins_client = Jenkins(jenkins_url, auth=(jenkins_username, jenkins_password))
 jira_url = JiraParameters["url"]
 jira_username = JiraParameters["username"]
 jira_password = JiraParameters["password"]
-jira_project_number = int(JiraParameters["project_number"])
+jira_project_number = int(JiraParameters["project_number"]) #it receives int as parameter
 
 jira = JIRA(server=jira_url, auth=(jira_username, jira_password))
 issue_key = jira.projects()[jira_project_number].key
-# projects = gl.projects.list(iterator=True)
-# for project in projects:
-#    print(project)
-app = Flask(__name__)
 
+app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -45,49 +42,43 @@ def webhook():
         data = request.get_json()
         if "event_name" in data:
             print('there is event_name')
-            if data['before'] == '0000000000000000000000000000000000000000' and data['event_name'] == 'push':
-                tempdata = data['project']
+            if data['before'] == '0000000000000000000000000000000000000000' and data['event_name'] == 'push': #new branch is where branch before is indexed as 0000..
+            tempdata = data['project']                                                                        #event name is in push actions
                 #proj_name = tempdata["name"]
                 print(f'Starting merge request on  {tempdata["name"]}')
-                proj_id = tempdata["id"]
+                proj_id = tempdata["id"] #get the project id
                 branch_name = data['ref'].split("/")
-                project = gl.projects.get(proj_id)
+                project = gl.projects.get(proj_id) #get the project
                 # print(type(branch_name)
                 branch_name = branch_name[len(branch_name) - 1]
-                print(branch_name)
+                #print(branch_name)
                 # commits = data['commits']
                 # total_commits = data['total_commits_count']
                 # before_commit = data['before']
-                project.mergerequests.create({
+                project.mergerequests.create({ #creating merge request with given parameters
                     'source_branch': branch_name,
                     'target_branch': 'main',
                     'title': f'merge {branch_name} into main',
-                    'labels': ['label1', 'label2']})
-                # gl.proj_name.mr.merge()
+                    'labels': [f'{branch_name}']
+                    #'labels': ['label1', 'label2']
+                    })
                 return 'success', 200
                 # starting a target job because push event is triggered
                 job = jenkins_client.get_job(jenkins_job_name)
                 item = jenkins_client.build_job(jenkins_job_name)
                 build = item.get_build()
                 return 'success', 200
-    if "event_type" in data:
+    if "event_type" in data: #merge request has event types
         if data['event_type'] == 'merge_request':
             print('merge request is going on')
             tempdata = data['project']
             #print(type(tempdata))
             #print(type(data))
-            # source_proj = tempsrc["name"]
-            # source_id = tempsrc["id"]
-            # summary_tmp = source_id + source_proj
             # global issue_key
             # issue_key = jira.projects()[0].key
-            print(issue_key)
-            global new_issue
+            #print(issue_key)
+            global new_issue #global variable because we will use it later
             oa = data['object_attributes']
-            #sb = pa['source_branch']
-            #tb = pa['target_branch']
-            #print(oa["source_branch"])
-            #print(oa["target_branch"])
             new_issue = jira.create_issue(project=issue_key,
                                           summary=f'On project {tempdata["name"]}, merging {oa["source_branch"]} into {oa["target_branch"]} branch',
                                           description='test', issuetype={'name': 'Bug'})
@@ -96,19 +87,19 @@ def webhook():
         abort(400)
 
 
-@app.route('/jenkinshook', methods=['POST'])
+@app.route('/jenkinshook', methods=['POST']) #webhook for jenkins
 def jenkinshook():
     if request.method == 'POST':
         print(request.json)
         data = request.get_json()
-        if "result" in data:
+        if "result" in data: #this is what we send in our http request body 
             if data['result'] == 'build success':
                 print('Build successful')
                 # fields = {'description': 'Jenkins build successful'}
                 # issue_key = jira.projects()
                 # update_issue = jira.issue_update(project=jira.projects()[0].key, description='edited')
                 jira.add_comment(new_issue, "Successful build on Jenkins")
-                print(issue_key)
+                #print(issue_key)
                 # jira.add_comment(issue_key, 'edited')
         return 'success', 200
     else:
@@ -117,4 +108,3 @@ def jenkinshook():
 
 if __name__ == '__main__':
     app.run(host='192.168.10.200', port=5001)
-
