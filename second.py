@@ -2,14 +2,8 @@ from flask import Flask, request, abort
 import gitlab
 from api4jenkins import Jenkins
 from jira import JIRA
-import configparser
 import os
 
-parser = argparse.ArgumentParser(description='Use Jenkinsadmin script with arguments')
-
-parser.add_argument('stop', metavar='team', type=str, help='stop the instance')
-
-args = parse.parse_args() 
 
 
 config_obj = configparser.ConfigParser()

@@ -11,7 +11,7 @@ parser.add_argument('--stopbuild', metavar='', type=str, help='Type --stopbuild 
 
 args = parser.parse_args() 
 
-option = ['stop', 'start', 'backup', 'run', 'test']
+option = ['stop', 'start', 'backup', 'run', 'runstop']
 
 #if len(sys.argv) == 1:
 #	print('To call the script you need at least one parameter!\n\nType <stop> top stop the instance\nType <start> to start the instance\nType <backup> to backup the instance\nType <run> to start the job')
@@ -50,16 +50,23 @@ def backup():
 	subprocess.run(['rm', '-rf', f'{jenkins_backup_dir}/{jenkins_backup_folder}']) #remove folder, leave only .tar
 
 def run():
+	#global job
 	job = client.get_job(jenkins_job_name) #job name is predefined in config file
 	#print(job)
+	#global item
 	item = client.build_job(jenkins_job_name) #build job and save it as "item"
+	#global build
 	build = item.get_build() #save the build as variable so we can use later
-	print(build)
+	#print(build)
 	#s = input('Press any key to stop it\n')
-	if (args.stopbuild): #if any key is entered job will stop
+
+def runstop():
+	#if (args.stopbuild): #if any key is entered job will stop
 		#job = client.get_job(jenkins_job_name)
-		last_build = job.get_last_build() #get the last build
-		last_build.stop() #stop it
+	job = client.get_job(jenkins_job_name)
+	last_build = job.get_last_build() #get the last build
+	last_build.stop() #stop it
+
 
 if args.command == option[0]:
 	#client.system.quiet_down() #sleep jenkins
@@ -76,7 +83,8 @@ if args.command == option[3]:
 	run()
 
 if args.command == option[4]:
-	print('Test successful')
+	#print('Test successful')
+	runstop()
 
 if args.command not in option:
 	print('Wrong parameter!')
