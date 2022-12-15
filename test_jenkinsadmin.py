@@ -54,8 +54,8 @@ class TestJenkinsadmin(unittest.TestCase):
     def test_erunstop(self):
         time.sleep(3)
         subprocess.run(['python3', 'jenkinsadmin.py', 'runstop'])
-        #print(job.get_last_build())
-        #print(job.get_last_unsuccessful_build())
+        print(job.get_last_build())
+        print(job.get_last_unsuccessful_build())
         self.assertEqual(job.get_last_unsuccessful_build(), job.get_last_build())
         #last_build = job.get_last_unsuccessful_build()
         #print(last_build)
