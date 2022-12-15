@@ -52,7 +52,7 @@ class TestJenkinsadmin(unittest.TestCase):
         #subprocess.run(['x'])
         #print('x')
     def test_erunstop(self):
-        time.sleep(3)
+        time.sleep(8)
         subprocess.run(['python3', 'jenkinsadmin.py', 'runstop'])
         print(job.get_last_build())
         print(job.get_last_unsuccessful_build())
